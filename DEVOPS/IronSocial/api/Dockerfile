@@ -1,13 +1,13 @@
-FROM maven:3.6.0-jdk-11-slim AS build
+FROM maven:3.8.3-openjdk-11 AS build
 WORKDIR /app
-COPY src /app/src
-COPY pom.xml /app
-RUN mvn -f /app/pom.xml clean package
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src/ /app/src/
+RUN mvn package -DskipTests
+
 
 FROM openjdk:11-jre-slim
-COPY --from=build app/target/IronSocial-0.0.1-SNAPSHOT.jar /app/IronSocial-0.0.1.jar
+WORKDIR /app
+COPY --from=build /app/target/IronSocial-0.0.1-SNAPSHOT.jar /app/iron-social.jar
 EXPOSE 8080
-ENTRYPOINT  [ "java","-Dserver.port=$PORT","-jar","/app/IronSocial-0.0.1.jar" ]
-
-
-
+ENTRYPOINT  ["java", "-jar", "iron-social.jar"]

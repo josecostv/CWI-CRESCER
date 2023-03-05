@@ -32,9 +32,10 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - spring.datasource.url=jdbc:postgresql://localhost:5432/iron_social
-      - spring.datasource.username=postgres
-      - spring.datasource.password=password
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/iron_social
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     ports:
       - "8080:8080"
     networks:
