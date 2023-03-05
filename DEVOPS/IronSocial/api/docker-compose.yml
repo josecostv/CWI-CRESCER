@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:14
+    container_name: iron-social-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=iron_social
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - app
+
+  pgadmin-compose:
+        image: dpage/pgadmin4
+        environment: 
+            PGADMIN_DEFAULT_EMAIL: "test@gmail.com"
+            PGADMIN_DEFAULT_PASSWORD: "test123!"
+        ports: 
+            - "16543:80"
+        depends_on: 
+            - db  
+
+  app:
+    container_name: iron-social-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - spring.datasource.url=jdbc:postgresql://localhost:5432/iron_social
+      - spring.datasource.username=postgres
+      - spring.datasource.password=password
+    ports:
+      - "8080:8080"
+    networks:
+      - app
+    depends_on:
+      - db
+
+volumes:
+  postgres_volume:
+
+networks:
+  app:
